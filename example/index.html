@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="ie=edge" http-equiv="X-UA-Compatible">
+    <script src="/node_modules/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js"></script>
+    <script src="/node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+    <script defer src="/dist/nft-card.min.js"></script>
+
+    <title>OpenSea Embeddable NFT example</title>
+    <style media="screen">
+        body {
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+          text-align: center;
+          color: #2c3e50;
+        }
+        .header {
+            padding-top: 5vh;
+        }
+        .card-container {
+          width: 670px;
+          margin: auto;
+          padding-top: 5vh;
+        }
+
+    </style>
+</head>
+<body>
+<h1 class="title header">Embeddable NFTs from OpenSea</h1>
+<h3>Show users any crypto collectible and let them buy it straight from your site, using a minimal-dependency web component!</h3>
+<div class="columns is-centered">
+    <div class="column is-8 ">
+        <div class="editor">
+        </div>
+    </div>
+</div>
+<div class="card-container">
+    <div style="padding-top: 5vh;"></div>
+    <nft-card
+            tokenAddress="0x2af75676692817d85121353f0d6e8e9ae6ad5576"
+            tokenId="57897811519642769493188138992815967602818565423779439302449631235552458049983"
+            network="mainnet"
+    >
+    </nft-card>
+    <div style="padding-top: 5vh;"></div>
+</div>
+<script
+        src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous"></script>
+<script src="index.js"></script>
+</body>
+</html>

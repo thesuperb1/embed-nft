@@ -81,7 +81,6 @@ export class NftCard extends LitElement {
         font-family: 'Roboto', sans-serif;
         -webkit-font-smoothing: antialiased;
         font-style: normal;
-        font-weight: normal;
         line-height: normal;
         border-radius: 5px;
         perspective: 1000px;

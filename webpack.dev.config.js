@@ -9,9 +9,9 @@ module.exports = {
     port: 9000,
     publicPath: '/dist'
   },
-  entry: './src/nft-card.ts',
+  entry: './src/sumi-nft.ts',
   output: {
-    filename: 'nft-card.min.js',
+    filename: 'sumi-nft.min.js',
     path: path.resolve(__dirname, 'dist'),
     publicPath: '/'
   },

@@ -3,9 +3,9 @@ const path = require('path')
 module.exports = {
   mode: 'production',
   devtool: 'source-map',
-  entry: './src/nft-card.ts',
+  entry: './src/sumi-nft.ts',
   output: {
-    filename: 'nft-card.min.js',
+    filename: 'sumi-nft.min.js',
     path: path.resolve(__dirname, 'dist'),
     publicPath: '/'
   },

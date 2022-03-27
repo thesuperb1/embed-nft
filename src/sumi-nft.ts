@@ -1,30 +1,19 @@
+
+import "./star";import './loader'
 import { css, customElement, html, LitElement, property } from 'lit-element'
-import { styleMap } from 'lit-html/directives/style-map'
-import { provider as Web3Provider } from 'web3-core'
+//import { styleMap } from 'lit-html/directives/style-map'
 import { NftMetadata } from '@alch/alchemy-web3'
 
-import { Network, OpenSeaPort } from 'opensea-js'
-import { OpenSeaAsset } from 'opensea-js/lib/types'
+import { Network } from 'opensea-js'
 
 /* lit-element classes */
 import './pill.ts'
 import './loader.ts'
-import './nft-card-front.ts'
-import './nft-card-back.ts'
+import './star.ts'
+
+
 import { ButtonEvent } from './types'
-import { getNFT, getProvider, networkFromString } from './utils'
-
-const HORIZONTAL_MIN_CARD_HEIGHT = '200px'
-const VERT_MIN_CARD_HEIGHT = '670px'
-
-const VERT_CARD_HEIGHT = '560px'
-const VERT_CARD_WIDTH = '380px'
-
-const VERT_CARD_WIDTH_MOBILE = '80vw'
-
-const HORIZONTAL_CARD_HEIGHT = '210px'
-const HORIZONTAL_CARD_WIDTH = '80vw'
-const HORIZONTAL_CARD_MAX_WIDTH = '670px'
+import { getNFT } from './utils'
 
 enum OrientationMode {
   Auto = 'auto',
@@ -39,8 +28,8 @@ const MOBILE_BREAK_POINT = 600
  * components.
  * Registers <nft-card> as an HTML tag.
  */
-@customElement('nft-card')
-export class NftCard extends LitElement {
+@customElement('sumi-nft')
+export class SumiNFT extends LitElement {
   /* User configurable properties */
   @property({ type: Boolean }) public horizontal?: boolean
   @property({ type: Boolean }) public vertical?: boolean
@@ -55,20 +44,17 @@ export class NftCard extends LitElement {
   @property({ type: String }) public network: Network = Network.Main
   @property({ type: String }) public referrerAddress: string = ''
 
-  @property({ type: Object }) private asset!: OpenSeaAsset
   @property({ type: Object }) private alchemyAsset!: NftMetadata
 
-  @property({ type: Object }) private traitData: object = {}
   @property({ type: Boolean }) public flippedCard: boolean = false
-  @property({ type: Object }) private provider: Web3Provider = null
-  @property({ type: Object }) private seaport!: OpenSeaPort
+
 
   // Card state variables
   @property({ type: Boolean }) private loading = true
   @property({ type: Boolean }) private error = false
 
   static get styles() {
-    return css`
+    return  css`
       :host {
         all: initial;
       }
@@ -111,6 +97,12 @@ export class NftCard extends LitElement {
       .card .error-message {
         font-size: 16px;
       }
+
+      .image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
     `
   }
 
@@ -125,59 +117,10 @@ export class NftCard extends LitElement {
       ? this.contractAddress
       : this.tokenAddress
 
-    /* If user sets any style overrides assume manual mode unless user has defined the mode */
-    if (!this.orientationMode) {
-      this.orientationMode =
-        this.width || this.height || this.horizontal || this.vertical
-          ? OrientationMode.Manual
-          : OrientationMode.Auto
-    }
-
-    this.horizontal = this.horizontal || !this.vertical
-
-    let vertCardWidth = VERT_CARD_WIDTH
-    if (
-      this.orientationMode === OrientationMode.Auto &&
-      window.innerWidth < MOBILE_BREAK_POINT
-    ) {
-      vertCardWidth = VERT_CARD_WIDTH_MOBILE
-      this.horizontal = false
-    }
-
-    // Set default dimensions
-    this.width = this.width
-      ? this.width
-      : this.horizontal
-      ? HORIZONTAL_CARD_WIDTH
-      : vertCardWidth
-    this.height = this.height
-      ? this.height
-      : this.horizontal
-      ? HORIZONTAL_CARD_HEIGHT
-      : VERT_CARD_HEIGHT
-    this.minHeight = this.horizontal
-      ? HORIZONTAL_MIN_CARD_HEIGHT
-      : VERT_MIN_CARD_HEIGHT
-    this.maxWidth = this.horizontal ? HORIZONTAL_CARD_MAX_WIDTH : ''
-
-    this.provider = getProvider()
-    const networkName = networkFromString(this.network)
-    this.seaport = new OpenSeaPort(this.provider, { networkName })
-
     try {
-      this.asset = await this.seaport.api.getAsset({
-        tokenAddress: this.tokenAddress,
-        tokenId: this.tokenId,
-      })
-
-      this.alchemyAsset = await getNFT(this.tokenAddress, this.tokenId);
-      console.log(this.alchemyAsset);
+      this.alchemyAsset = await getNFT(this.tokenAddress, this.tokenId)
+      console.log(this.alchemyAsset)
       console.log(this.alchemyAsset.image)
-
-      this.traitData = {
-        traits: this.asset.traits,
-        collectionTraits: this.asset.collection.traitStats,
-      }
     } catch (e) {
       this.error = true
       // Probably could not find the asset
@@ -188,7 +131,6 @@ export class NftCard extends LitElement {
 
     // Tell the component to update with new state
     await this.requestUpdate()
-
   }
 
   public renderErrorTemplate() {
@@ -204,77 +146,21 @@ export class NftCard extends LitElement {
     return html` <loader-element></loader-element> `
   }
 
-  public renderInnerCardTemplate() {
-    return html`
-      <nft-card-front
-        .horizontal=${this.horizontal}
-        @button-event="${this.eventHandler}"
-        .asset=${this.asset}
-        .state=${{
-          network: this.network,
-        }}
-        .flippedCard="${this.flippedCard}"
-      ></nft-card-front>
-      <nft-card-back
-        .horizontal=${this.horizontal}
-        .traitData=${this.traitData}
-        .openseaLink="${this.asset.openseaLink}"
-        @flip-event="${this.eventHandler}"
-        .flippedCard="${this.flippedCard}"
-      ></nft-card-back>
-    `
-  }
-
   public render() {
     return html`
-     <div>
-       <h1>${this.alchemyAsset.title}</h1>
-       <h2>${this.alchemyAsset.description}</h2>
-      <img src=${this.alchemyAsset.metadata.image ?? "https://www.freeiconspng.com/thumbs/no-image-icon/no-image-icon-15.png"} />
-       </div>
+      <div>
+        <h1>${this.alchemyAsset.title}</h1>
+        <h2>${this.alchemyAsset.description}</h2>
+        <star-button></star-button>
 
-
-      <div
-        class="card ${this.flippedCard ? 'flipped-card' : ''}"
-        style=${styleMap({
-          width: this.width,
-          height: this.height,
-          minHeight: this.minHeight,
-          maxWidth: this.maxWidth,
-        })}
-      >
-        <div class="card-inner">
-          ${this.loading
-            ? this.renderLoaderTemplate()
-            : this.error
-            ? this.renderErrorTemplate()
-            : this.renderInnerCardTemplate()}
-        </div>
+        <img
+          class="image"
+          src=${this.alchemyAsset.metadata.image ??
+          'https://www.freeiconspng.com/thumbs/no-image-icon/no-image-icon-15.png'}
+        />
       </div>
     `
   }
 
-  private flipCard() {
-    this.flippedCard = !this.flippedCard
-  }
-
-  private async eventHandler(event: ButtonEvent) {
-    const { detail } = event
-
-    switch (detail.type) {
-      case 'view':
-        this.goToOpenSea()
-        break
-      case 'flip':
-        this.flipCard()
-        break
-    }
-  }
-
-  private goToOpenSea() {
-    const url = this.referrerAddress
-      ? `${this.asset.openseaLink}?ref=${this.referrerAddress}`
-      : this.asset.openseaLink
-    window.open(url, '_blank')
-  }
+  private async eventHandler(event: ButtonEvent) {}
 }
